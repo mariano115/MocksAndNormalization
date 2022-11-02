@@ -16,45 +16,48 @@ let container = new Container();
 
 io.on("connection", async (socket) => {
   await getMensajes().then((res) => socket.emit("messages", res));
-  socket.emit("products", await container.getAll());
+  socket.emit("products", await fakerProducts(5));
 
   socket.on("new-message", async (data) => {
-    const dateMessage = new Date();
     await addMensaje({
-      email: data.email,
-      text: data.text,
-      date:
-        dateMessage.toLocaleDateString() +
-        " " +
-        dateMessage.getHours() +
-        ":" +
-        dateMessage.getMinutes() +
-        ":" +
-        dateMessage.getSeconds(),
+      id: data.id,
+      nombre: data.nombre,
+      apellido: data.apellido,
+      edad: data.edad,
+      alias: data.alias,
+      avatar: data.avatar,
+      text: data.text
     });
     io.sockets.emit("messages", await getMensajes());
   });
 
-  socket.on("new-product", async (data) => {
+  /* socket.on("new-product", async (data) => {
     await container.addProduct({
       nombre: data.nombre,
       precio: data.precio,
       foto: data.foto,
     });
     io.sockets.emit("products", await container.getAll());
-  });
+  }); */
 });
 
 app.set("views", "./views");
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
-  res.render("formulario", { productos: container.getAll() });
+  res.render("formulario", { productos: fakerProducts(5) });
 });
 
 const fakerProducts = () => {
-  const randomName = faker.commerce.product();
-  console.log(randomName);
+  const products = []
+  for (let index = 0; index < 5; index++) {
+    products.push({
+      nombre: faker.commerce.product(),
+      precio: faker.commerce.price(),
+      foto: faker.image.imageUrl()
+    })
+  }
+  return products;
 };
 
 httpServer.listen(PORT, () => console.log("servidor Levantado"));
