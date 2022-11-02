@@ -3,6 +3,7 @@ const { Container } = require("./Container");
 const { getMensajes, addMensaje } = require("./Mensajes");
 const { Server: HttpServer } = require("http");
 const { Server: IOServer } = require("socket.io");
+const { faker } = require("@faker-js/faker");
 const app = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
@@ -50,5 +51,10 @@ app.set("view engine", "ejs");
 app.get("/", (req, res) => {
   res.render("formulario", { productos: container.getAll() });
 });
+
+const fakerProducts = () => {
+  const randomName = faker.commerce.product();
+  console.log(randomName);
+};
 
 httpServer.listen(PORT, () => console.log("servidor Levantado"));
