@@ -1,9 +1,6 @@
-const { options } = require('./options/mariaDB');
-const knex = require('knex')(options);
-
 class Container {
   addProduct = async (newProduct) => {
-    try {
+    /* try {
       if (JSON.stringify(newProduct) === "{}") {
         throw "Producto no Valido";
       }
@@ -24,54 +21,54 @@ class Container {
     } catch (error) {
       console.log(error);
       return false;
-    }
+    } */
   };
 
   getById = async (id) => {
-    try {
+    /* try {
       return await knex.from('products').where({ id })
     } catch (error) {
       console.log(error);
       return error;
-    }
+    } */
   };
 
   getAll = async () => {
-    try {
+    /* try {
       return await knex.from('products').select("*");
     } catch (error) {
       console.log(error)
-    }
+    } */
   };
 
   modifyProduct = async (id, product) => {
-    try {
+    /* try {
       await knex('products').where({ id }).
         update(product)
       return product;
     } catch (error) {
       console.log(error);
       return false;
-    }
+    } */
   };
 
   deleteById = async (id) => {
-    try {
+   /*  try {
       await knex.from('products').where({ id }).del()
       return true;
     } catch (error) {
       console.log(error);
       return error;
-    }
+    } */
   };
 
   deleteAll = () => {
-    try {
+    /* try {
       knex('products').del()
     } catch (error) {
       console.log(error);
       return error;
-    }
+    } */
   };
 }
 

@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const { Container } = require("./Container");
 const { getMensajes, addMensaje } = require("./Mensajes");
 const { Server: HttpServer } = require("http");
@@ -7,38 +8,47 @@ const { faker } = require("@faker-js/faker");
 const app = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
+const cors = require('cors')
+const Config = require("./config");
+const normalizr = require('normalizr');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors())
 
 const PORT = process.env.PORT || 8080;
 let container = new Container();
+
+mongoose.connect(
+  Config.urlMongo,
+  {
+    useNewUrlParser: true,
+  },
+  (err) => {
+    if (err) throw new Error(`Error de conexión a la base de datos ${err}`);
+    console.log("Base de datos conectada");
+  }
+);
 
 io.on("connection", async (socket) => {
   await getMensajes().then((res) => socket.emit("messages", res));
   socket.emit("products", await fakerProducts(5));
 
   socket.on("new-message", async (data) => {
+    /* console.log("new-message", data) */
     await addMensaje({
-      id: data.id,
-      nombre: data.nombre,
-      apellido: data.apellido,
-      edad: data.edad,
-      alias: data.alias,
-      avatar: data.avatar,
+      author: {
+        email: data.email,
+        nombre: data.nombre,
+        apellido: data.apellido,
+        edad: data.edad,
+        alias: data.alias,
+        avatar: data.avatar
+      },
       text: data.text
     });
     io.sockets.emit("messages", await getMensajes());
   });
-
-  /* socket.on("new-product", async (data) => {
-    await container.addProduct({
-      nombre: data.nombre,
-      precio: data.precio,
-      foto: data.foto,
-    });
-    io.sockets.emit("products", await container.getAll());
-  }); */
 });
 
 app.set("views", "./views");
@@ -46,6 +56,10 @@ app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
   res.render("formulario", { productos: fakerProducts(5) });
+});
+
+app.get("/productos-test", async (req, res) => {
+  res.send(fakerProducts(5))
 });
 
 const fakerProducts = () => {
