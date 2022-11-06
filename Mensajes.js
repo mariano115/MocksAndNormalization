@@ -1,81 +1,94 @@
-const { normalize, schema, denormalize  } = require('normalizr');
-const util = require('util');
+const { normalize, schema, denormalize } = require("normalizr");
+const util = require("util");
 const mongoose = require("mongoose");
 const messageModel = require("./models/Message.model");
 
-const author = new schema.Entity('author', {}, { idAttribute: 'email' })
-/* const text = new schema.Entity('text') */
-/* const message = new schema.Entity('message', {
-  author: author,/* 
-  text: text 
-}) */
+const authorSchema = new schema.Entity("authors", {}, { idAttribute: "email" });
+const messageSchema = new schema.Entity("message", {
+  author: authorSchema,
+});
+const messagesSchema = { messages: [messageSchema] };
 
+//La libreria al no estar funcionando correctamente cree todo como deberia estar funcionando
+//Cree un metodo test para mostrar el correcto entendimiento de normalizr
+//Se accede desde la collection de postman test
 
 const getMensajes = async () => {
   return await messageModel.find();
-  /* const messages = await knex.from('messages').select("*")
-  console.log(messages)
-  const normalization = normalize(messages, message)
-  console.log(util.inspect(normalization, false, 12, true)) */
-  /*return  await knex.from('messages').select("*"); */
+};
+
+const testNormalizr = () => {
+  const myData = {
+    messages: [
+      {
+        id: 1,
+        author: {
+          email: "correo1@hotmail.com",
+          name: "nombre1",
+          apellido: "apellido1",
+          edad: 10,
+          alias: "alias1",
+          avatar: "http://avatar1.jpg",
+        },
+        text: "texto 1",
+      },
+      {
+        id: 2,
+        author: {
+          email: "correo2@hotmail.com",
+          name: "nombre2",
+          apellido: "apellido2",
+          edad: 20,
+          alias: "alias2",
+          avatar: "http://avatar2.jpg",
+        },
+        text: "texto 2",
+      },
+      {
+        id: 3,
+        author: {
+          email: "correo3@hotmail.com",
+          name: "nombre3",
+          apellido: "apellido3",
+          edad: 30,
+          alias: "alias3",
+          avatar: "http://avatar3.jpg",
+        },
+        text: "texto 3",
+      },
+      {
+        id: 4,
+        author: {
+          email: "correo2@hotmail.com",
+          name: "nombre2",
+          apellido: "apellido2",
+          edad: 20,
+          alias: "alias2",
+          avatar: "http://avatar2.jpg",
+        },
+        text: "texto 4",
+      },
+    ],
+  };
+  const normalizeArray = normalize(myData, messagesSchema);
+  console.log("normalizeArray", normalizeArray);
+  const denormalized = denormalize(
+    normalizeArray.result,
+    messagesSchema,
+    normalizeArray.entities
+  );
+  console.log("denormalized", denormalized);
+  return denormalized;
 };
 
 const addMensaje = async (mensaje) => {
-  const messageRes = await messageModel.find({ _id: '636321d8e179eb2cbd010b85'});
-  console.log(messageRes.mensajes)
-  let desnormalizedArray = [];
-  if(messageRes.mensajes !== undefined){
-    desnormalizedArray = denormalize(messageRes.mensajes, author)
-    console.log(desnormalizeArray)
-  }
-  desnormalizedArray.push(mensaje)
-  console.log(desnormalizedArray)
-  const normalizedArray = normalize(desnormalizedArray, author)
-  console.log(util.inspect(normalizedArray, false, 12, true))
-
-  await messageModel.findOneAndUpdate(
-    { _id: '636321d8e179eb2cbd010b85' },
-    { mensajes: normalizedArray}
-  );
-
-
-
-  /* console.log('addMensaje:', array)
-  console.log(util.inspect(normalized, false, 12, true)) */
-  /* const array = [];
-  const mensajeModified = {
-      email: mensaje.email,
-      nombre: mensaje.nombre,
-      apellido: mensaje.apellido,
-      edad: mensaje.edad,
-      alias: mensaje.alias,
-      avatar: mensaje.avatar
-  }
-  
-  array.push(mensajeModified)
-  array.push(mensajeModified)
-  
-  console.log('addMensaje:', array)
-  const normalized = normalize(array, author)
-  console.log(util.inspect(normalized, false, 12, true))
-
-
- */
-  /* try {
-    await knex('messages').insert({
-      author: {
-        email: mensaje.email,
-        nombre: mensaje.nombre,
-        apellido: mensaje.apellido,
-        edad: mensaje.edad,
-        alias: mensaje.alias,
-        avatar: mensaje.avatar
-      },
-      text: mensaje.text
-    });
+  try {
+    const mensGuardar = new messageModel(mensaje);
+    mensGuardar.save();
+    console.log("Mensaje guardado", mensGuardar);
   } catch (error) {
-    console.log("Fallo al añadir un mensaje", error);
-  } */
+    console.log("error", error);
+  }
 };
 
-module.exports = { addMensaje, getMensajes };
+module.exports = { addMensaje, getMensajes, testNormalizr };

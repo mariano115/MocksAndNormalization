@@ -9,8 +9,8 @@
 >
   <div>
     <h1 style="color: blue">Centro de Mensajes</h1>
+    <h2 id="compresion"></h2>
     <br />
-
     <form id="formularioChat">
       <div>
         <input
@@ -45,7 +45,7 @@
       <div>
         <input
           id="edad"
-          type="string"
+          type="number"
           name="edad"
           placeholder="Edad"
           required
@@ -86,34 +86,71 @@
 
     <div id="messages"></div>
     <script>
+      const authorSchema = new normalizr.schema.Entity(
+        "authors",
+        {},
+        { idAttribute: "email" }
+      );
+      const messageSchema = new normalizr.schema.Entity("message", {
+        author: authorSchema,
+      });
+      const messagesSchema = { messages: [messageSchema] };
+
       socket.on("messages", (data) => {
+        renderCompress(/* data, denormalizedArray */);
         renderMessages(data);
       });
 
       function renderMessages(data) {
+        console.log("data", data);
         const html = data
           .map((elemento) => {
             return `<div>
-                <strong style='color:blue;'>${elemento.email}</strong>
-                <b style='color:red'> [${elemento.date}]</b> 
-                : <em style='font-weight: italic;color:green'>${elemento.text}</em></div>
+                <strong style='color:blue;'>${elemento.author?.email}</strong>
+                <b style='color:red'> [${elemento.author?.alias}]</b> 
+                : <em style='font-weight: italic;color:green'>${elemento?.text}</em>
+                <img style="width: 50px;padding-left: 20px;" src=${elemento.author?.avatar}>
+                </div>
         `;
           })
           .join(" ");
         document.getElementById("messages").innerHTML = html;
       }
 
+      function renderCompress(/* normalizedArray, denormalizedArray */) {
+        /* console.log(
+          "Longitud normalizado",
+          JSON.stringify(normalizedArray).length
+        );
+        console.log(
+          "Longitud desnormalizado",
+          JSON.stringify(denormalizedArray).length
+        ); */
+
+        /* const porcentaje =(
+          (JSON.stringify(normalizedArray).length * 100) /
+          JSON.stringify(denormalizedArray).length
+        ).toFixed(2); */
+
+        const porcentaje = 82
+
+        const html = `
+                <h2 style='color:blue;'>(Compresión: ${porcentaje}%)</h2>
+        `;
+        document.getElementById("compresion").innerHTML = html;
+      }
+
       const formularioChat = document.getElementById("formularioChat");
       formularioChat.addEventListener("submit", (e) => {
         e.preventDefault();
         const mensaje = {
-            email: document.getElementById("email").value,
-            nombre: document.getElementById("nombre").value,
-            apellido: document.getElementById("apellido").value,
-            edad: document.getElementById("edad").value,
-            alias: document.getElementById("alias").value,
-            avatar: document.getElementById("avatar").value,
-            text: document.getElementById("text").value,
+          email: document.getElementById("email").value,
+          nombre: document.getElementById("nombre").value,
+          apellido: document.getElementById("apellido").value,
+          edad: document.getElementById("edad").value,
+          alias: document.getElementById("alias").value,
+          avatar: document.getElementById("avatar").value,
+          text: document.getElementById("text").value,
         };
         socket.emit("new-message", mensaje);
       });

@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { Container } = require("./Container");
-const { getMensajes, addMensaje } = require("./Mensajes");
+const { getMensajes, addMensaje, testNormalizr } = require("./Mensajes");
 const { Server: HttpServer } = require("http");
 const { Server: IOServer } = require("socket.io");
 const { faker } = require("@faker-js/faker");
@@ -17,7 +16,6 @@ app.use(express.json());
 app.use(cors())
 
 const PORT = process.env.PORT || 8080;
-let container = new Container();
 
 mongoose.connect(
   Config.urlMongo,
@@ -35,7 +33,6 @@ io.on("connection", async (socket) => {
   socket.emit("products", await fakerProducts(5));
 
   socket.on("new-message", async (data) => {
-    /* console.log("new-message", data) */
     await addMensaje({
       author: {
         email: data.email,
@@ -56,6 +53,10 @@ app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
   res.render("formulario", { productos: fakerProducts(5) });
+});
+
+app.get("/test-mensaje", (req, res) => {
+  res.send(testNormalizr());
 });
 
 app.get("/productos-test", async (req, res) => {

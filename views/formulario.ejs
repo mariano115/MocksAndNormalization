@@ -5,18 +5,10 @@
   <div
     style="background-color: rgb(191, 191, 209); width: 50%;height: auto; display: flex ; justify-items: center; flex-direction: column; align-items: center">
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
     <script>
       let socket = io()
-      const formularioProducto = document.getElementById('formularioProducto');
-      formularioProducto.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const producto = {
-          nombre: document.getElementById("nombre").value,
-          precio: document.getElementById("precio").value,
-          foto: document.getElementById("foto").value,
-        };
-        socket.emit("new-product", producto);
-      })
+      
     </script>
     <div>
       <h1 style="color: blue">Vista de Productos</h1>

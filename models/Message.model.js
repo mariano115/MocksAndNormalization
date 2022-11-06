@@ -1,8 +1,14 @@
 const { Schema, model } = require("mongoose");
 
-const messageSchema = new Schema({
-  id: { type: Number, required: true },
-  mensajes: { type: Array, required: true }
+const MessagesSchema = new Schema({
+	author: {
+		email: { type: String },
+		nombre: { type: String },
+		apellido: { type: String },
+		edad: { type: Number },
+		alias: { type: String },
+		avatar: { type: String },
+	},
+	text: { type: String }
 });
-
-module.exports = model("message", messageSchema);
+module.exports = model("messages", MessagesSchema)
