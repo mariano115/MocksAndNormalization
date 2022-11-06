@@ -1,0 +1,48 @@
+{
+	"info": {
+		"_postman_id": "cc5d36b3-f1c1-4d5b-a45f-b407f9b12aee",
+		"name": "Normalizr",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6391686"
+	},
+	"item": [
+		{
+			"name": "testMensaje",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/test-mensaje",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"test-mensaje"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "testMensaje",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/productos-test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"productos-test"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
